@@ -1,0 +1,9 @@
+com/example/hotel/repository/HotelRepository.class
+com/example/hotel/repository/RoomRepository.class
+com/example/hotel/entity/Hotel.class
+com/example/hotel/service/HotelService.class
+com/example/hotel/HotelServiceApplication.class
+com/example/hotel/entity/Room$RoomBuilder.class
+com/example/hotel/entity/Room.class
+com/example/hotel/controller/HotelController.class
+com/example/hotel/entity/Hotel$HotelBuilder.class

@@ -1,0 +1,7 @@
+/home/frolovf97/hotel-booking-system/hotel-service/src/main/java/com/example/controller/HotelController.java
+/home/frolovf97/hotel-booking-system/hotel-service/src/main/java/com/example/entity/Hotel.java
+/home/frolovf97/hotel-booking-system/hotel-service/src/main/java/com/example/entity/Room.java
+/home/frolovf97/hotel-booking-system/hotel-service/src/main/java/com/example/hotel/HotelServiceApplication.java
+/home/frolovf97/hotel-booking-system/hotel-service/src/main/java/com/example/repository/HotelRepository.java
+/home/frolovf97/hotel-booking-system/hotel-service/src/main/java/com/example/repository/RoomRepository.java
+/home/frolovf97/hotel-booking-system/hotel-service/src/main/java/com/example/service/HotelService.java

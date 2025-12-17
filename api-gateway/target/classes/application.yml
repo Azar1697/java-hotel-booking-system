@@ -1,0 +1,37 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: hotel-route
+          uri: lb://HOTEL-SERVICE
+          predicates:
+            - Path=/api/hotels/**, /api/rooms/**
+          filters:
+            - Authentication # <--- ДОБАВИЛИ ЗАМОК СЮДА
+
+        - id: booking-route
+          uri: lb://BOOKING-SERVICE
+          predicates:
+            - Path=/api/bookings/**
+          filters:
+            - Authentication # <--- И СЮДА
+
+        - id: auth-route
+          uri: lb://BOOKING-SERVICE
+          predicates:
+            - Path=/api/auth/**
+          # А СЮДА НЕ НАДО! (тут вход без пароля)
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

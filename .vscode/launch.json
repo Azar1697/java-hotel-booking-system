@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Discovery Server",
+            "request": "launch",
+            "mainClass": "com.example.discovery.DiscoveryServerApplication",
+            "projectName": "discovery-server"
+        },
+        {
+            "type": "java",
+            "name": "Hotel Service",
+            "request": "launch",
+            "mainClass": "com.example.hotel.HotelServiceApplication",
+            "projectName": "hotel-service"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Start All Systems",
+            "configurations": ["Discovery Server", "Hotel Service"]
+        }
+    ]
+}
