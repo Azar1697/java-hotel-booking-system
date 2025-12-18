@@ -1,102 +1,189 @@
-Отличная работа! 🎉 Ты прошел огонь, воду и Docker Compose.Вот профессиональный README.md, который не стыдно показать на защите или выложить на GitHub. Он описывает все возможности, которые мы реализовали (включая автоподбор, защиту и отказоустойчивость).Скопируй этот текст в файл README.md в корне твоего проекта.Markdown# 🏨 Hotel Booking System (Microservices)
+Вот готовый код для файла README.md. Скопируй его целиком и вставь в свой файл в VS Code.Markdown# 🏨 Hotel Booking System (Microservices)
 
-![Java](https://img.shields.io/badge/Java-17-orange) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.0-green) ![Docker](https://img.shields.io/badge/Docker-Compose-blue) ![Status](https://img.shields.io/badge/Status-Completed-success)
+![Java](https://img.shields.io/badge/Java-17-orange)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-green)
+![Docker](https://img.shields.io/badge/Docker-Compose-blue)
+![Architecture](https://img.shields.io/badge/Architecture-Microservices-purple)
 
-Высоконагруженная система бронирования отелей, построенная на микросервисной архитектуре. Проект реализует паттерн Saga, интеллектуальный алгоритм распределения номеров, отказоустойчивость (Resilience) и централизованную безопасность.
-
----
-
-## 🚀 Основные возможности
-
-* **Микросервисная архитектура:** Разделение на независимые сервисы (Booking, Hotel, Gateway, Discovery).
-* **Умный алгоритм (Smart Allocation):** Система автоматически подбирает "лучшую" комнату для равномерного распределения нагрузки (`times_booked`).
-* **Распределенные транзакции (Saga):** Гарантия согласованности данных. Если отель не подтверждает бронь, происходит автоматическая компенсация (отмена) в сервисе бронирования.
-* **Отказоустойчивость (Resilience):** Реализованы тайм-ауты (3 сек) и повторные попытки (Retry) при недоступности сервисов.
-* **Безопасность (Security):** JWT-аутентификация на шлюзе (Gateway) + Role-Based Access Control (RBAC) внутри сервисов.
-* **Plug & Play:** Система автоматически предзаполняет базу данных пользователями и отелями при старте.
+Высоконагруженная система бронирования отелей, построенная на микросервисной архитектуре.
+Проект реализует паттерн **Saga** для обеспечения согласованности данных между сервисами, алгоритм автоматического подбора номеров и защиту от конкурентной записи (Race Conditions).
 
 ---
 
-## 🛠 Технологический стек
-
-* **Core:** Java 17, Spring Boot 3
-* **Infrastructure:** Spring Cloud Gateway, Netflix Eureka
-* **Communication:** Spring WebFlux (WebClient), REST
-* **Database:** H2 (In-Memory) с поддержкой индексов для Highload
-* **Deploy:** Docker, Docker Compose
+## 📑 Содержание
+1. [Архитектура](#-архитектура)
+2. [Ключевые особенности](#-ключевые-особенности)
+3. [Стек технологий](#-стек-технологий)
+4. [Запуск проекта](#-запуск-проекта)
+5. [API Эндпоинты](#-api-эндпоинты)
+6. [Тестирование](#-тестирование)
+7. [Структура проекта](#-структура-проекта)
 
 ---
 
 ## 🏗 Архитектура
 
-Система состоит из 4-х контейнеров:
+Система состоит из 4-х взаимосвязанных микросервисов, оркестрируемых через Docker Compose.
 
-| Сервис | Порт | Описание |
-| :--- | :--- | :--- |
-| **Discovery Server** | `8761` | Реестр сервисов (Eureka). Все сервисы регистрируются здесь. |
-| **API Gateway** | `8090` | Единая точка входа. Маршрутизация, проверка JWT, проброс заголовков безопасности. |
-| **Booking Service** | `8082` | Управление бронированиями, Сага, Resilience логика. |
-| **Hotel Service** | `8081` | Управление отелями, номерами, статистика популярности. |
+```mermaid
+graph TD
+    Client((Client / User))
+    Gateway[API Gateway <br/> :8090]
+    Eureka[Discovery Server <br/> :8761]
+    
+    subgraph Services
+        Booking[Booking Service <br/> :8082]
+        Hotel[Hotel Service <br/> :8081]
+    end
+    
+    Client -->|JWT Token| Gateway
+    Gateway -.->|Registry Check| Eureka
+    Booking -.->|Register| Eureka
+    Hotel -.->|Register| Eureka
+    
+    Gateway -->|/api/bookings| Booking
+    Gateway -->|/api/hotels| Hotel
+    
+    Booking -->|Saga: Reserve Room| Hotel
+
+    
+
+## 🌟 Ключевые особенности
+
+1. **Распределенная транзакция (Saga Pattern)**
+   * Оркестрация процесса бронирования. При ошибке на этапе подтверждения номера в `HotelService` происходит автоматическая компенсация (отмена) брони в `BookingService`.
+
+2. **Resilience & Fault Tolerance**
+   * Использование **Timeouts** и **Retries** при межсервисном взаимодействии. Если `HotelService` временно недоступен, система повторит запрос перед тем, как вернуть ошибку.
+
+3. **Умный алгоритм (Auto-Select)**
+   * Реализована логика автоматического подбора "лучшей" комнаты на основе статистики (`timesBooked`), чтобы обеспечить равномерный износ номерного фонда.
+
+4. **Безопасность (Security)**
+   * **JWT Authentication**: Полная защита API.
+   * **Role-Based Access Control**: Разделение прав на `USER` и `ADMIN`.
+   * Валидация токенов на уровне Gateway и Resource Servers.
+
+5. **Защита данных**
+   * Предотвращение овербукинга (Double Booking) на уровне БД.
+   * Корректная обработка конкурентных запросов на одни и те же даты.
 
 ---
 
-## ▶️ Запуск проекта
+## 🛠 Стек технологий
 
-Для запуска требуется установленный **Docker Desktop**.
-
-1.  **Сборка JAR-файлов:**
-    ```bash
-    mvn clean package -DskipTests
-    ```
-
-2.  **Запуск контейнеров:**
-    ```bash
-    docker-compose up --build
-    ```
-
-*После запуска подождите 30-60 секунд для регистрации сервисов в Eureka.*
+* **Core**: Java 17, Spring Boot 3.3.0
+* **Infrastructure**: Spring Cloud Gateway, Netflix Eureka
+* **Database**: H2 (In-Memory) с сохранением состояния при перезапусках
+* **Containerization**: Docker, Docker Compose
+* **Testing**: JUnit 5, MockMvc, Integration Tests (Testcontainers-style)
+* **Communication**: REST (WebClient)
 
 ---
 
-## 🔑 Доступы (Предзаполненные данные)
+## 🚀 Запуск проекта
 
-База данных автоматически наполняется при старте. Вы можете использовать этих пользователей:
+### Требования
+* Docker & Docker Compose
+* Maven (для сборки)
 
-| Роль | Username | Password | Возможности |
-| :--- | :--- | :--- | :--- |
-| **ADMIN** | `admin` | `password` | Создание отелей, номеров, просмотр всего. |
-| **USER** | `client` | `12345` | Создание бронирований, просмотр истории. |
+### Пошаговая инструкция
 
----
+1. **Клонирование репозитория**
+   ```bash
+   git clone [https://github.com/ВАШ_НИК/hotel-booking-system.git](https://github.com/ВАШ_НИК/hotel-booking-system.git)
+   cd hotel-booking-system
 
-## 📡 API Documentation
+### Сборка JAR-файлов
+Очистка и компиляция всех микросервисов:
+```bash
+mvn clean package -DskipTests
 
-Все запросы отправляются на порт **8090** (Gateway).
+###Запуск контейнеров
+Поднятие всей инфраструктуры одной командой:
+```bash
+docker-compose up --build
 
-### 1️⃣ Аутентификация
+### Проверка готовности
 
-**Получить токен (Login):**
-`POST /api/auth/token`
+* Eureka Dashboard: http://localhost:8761 (Убедитесь, что все 3 сервиса зарегистрированы).
+
+* API Gateway: Доступен по адресу http://localhost:8090.
+
+###🔌 API Эндпоинты
+## 🔐 Аутентификация
+| Метод | URL               | Описание          | Тело запроса (JSON)                              |
+|------:|-------------------|-------------------|--------------------------------------------------|
+| POST  | /api/auth/token   | Получение токена  | `{"username":"...","password":"..."}`            |
+| POST  | /api/auth/register| Регистрация       | `{"username":"...","password":"..."}`            |
+
+## Предустановленные пользователи:
+
+* Admin: admin / password
+
+## 🏨 Отели (Hotel Service)
+| Метод | URL                   | Описание                | Роль                                             |
+|------:|-----------------------|-------------------------|--------------------------------------------------|
+| GET   | /api/hotels           | Получить список отелей  | USER                                             |
+| GET   | /api/hotels/{id}/rooms| Получить комнаты отеля  | USER                                             |
+| POST  | /api/hotels           | Добавить новый отель    | ADMIN                                            |
+
+## 📅 Бронирование (Booking Service)
+
+| Метод  | URL                   | Описание                        | Роль                                             |
+|------: |-----------------------|---------------------------------|--------------------------------------------------|
+| POST   | /api/bookings         | Создать бронь(см. пример ниже)  | USER                                             |
+| DELETE | /api/bookings/{id}    | Отменить свою бронь             | USER                                             |
+| DELETE | /user?id={id}	     | Удалить пользователя            | ADMIN                                            |
+
+## Пример создания брони (Auto-Select):
 ```json
+POST /api/bookings
+Header: Authorization: Bearer <TOKEN>
 {
-  "username": "admin",
-  "password": "password"
+    "userId": 2,
+    "hotelId": 1,
+    "autoSelect": true,
+    "startDate": "2025-06-01",
+    "endDate": "2025-06-10"
 }
-В ответ придет JWT-токен. Используйте его в заголовке: Authorization: Bearer <TOKEN>.2️⃣ Отели (Hotel Service)МетодURLРольОписаниеGET/api/hotelsPublicПолучить список всех отелейPOST/api/hotelsADMINСоздать новый отельPOST/api/hotels/{id}/roomsADMINДобавить комнату в отельGET/api/hotels/{id}/bestPublicАлгоритм: Найти лучшую свободную комнатуПример создания отеля (Admin):Bashcurl -X POST http://localhost:8090/api/hotels \
--H "Authorization: Bearer <TOKEN>" \
--H "Content-Type: application/json" \
--d '{ "name": "Plaza", "city": "NY", "address": "5th Avenue" }'
-3️⃣ Бронирование (Booking Service)МетодURLРольОписаниеPOST/api/bookingsUserСоздать бронирование (Ручное или Авто)GET/api/bookingsUserИстория бронирований🔥 Фича: Автоподбор номера (Auto-Select)Если вы не знаете ID комнаты, передайте флаг "autoSelect": true. Система сама найдет наименее загруженный номер в отеле.Пример запроса (Smart Booking):POST /api/bookingsJSON{
-  "userId": 1,
-  "hotelId": 1,
-  "autoSelect": true, 
-  "startDate": "2026-01-01",
-  "endDate": "2026-01-05"
-}
-Ответ (Успех):JSON{
-  "id": 1,
-  "roomId": 102,       // <-- Система сама выбрала комнату
-  "status": "CONFIRMED",
-  ...
-}
-🛡 Отказоустойчивость и ТестированиеПроверка Resilience (Устойчивость)Если Hotel Service упадет или будет отвечать дольше 3 секунд, Booking Service не зависнет.Он сделает 2 повторные попытки (Retry).Если отель недоступен, бронь получит статус CANCELLED (Graceful Degradation).ТестированиеВ проекте реализованы Integration Tests (JUnit 5 + MockMvc):✅ Позитивный сценарий создания брони.✅ Негативный сценарий (валидация дат).✅ Проверка защиты ролей (403 Forbidden).Запуск тестов:Bashmvn test
+
+### 🧪 Тестирование
+## Проект покрыт тестами на двух уровнях: Unit и Integration E2E.
+# 1. Запуск Unit-тестов (MockMvc)
+
+* Проверка контроллеров, валидации и обработки ошибок без поднятия Docker.
+````bash
+mvn test
+
+# 2. Запуск E2E сценария (FullSystemTest)
+
+* Интеграционный тест, проверяющий полный цикл работы системы на реальных Docker-контейнерах.
+
+* Расположение: booking-service/src/test/java/.../FullSystemTest.java
+
+* Запуск: Через IDE или Maven (требуется запущенный docker-compose).
+
+# 3. Bash-скрипт (Демонстрация)
+* В корне проекта находится скрипт test_scenario.sh, который автоматически:
+* Логинится под Админом и Клиентом.
+* Создает бронирование.
+* Пытается создать дубликат (проверка защиты).
+* Отменяет бронирование.
+
+* Запуск:
+
+```bash
+./test_scenario.sh
+
+### 📂 Структура проекта
+
+* discovery-server — Eureka Service Registry.
+
+* api-gateway — Единая точка входа (Routing, Security).
+
+* hotel-service — Управление номерным фондом (CRUD).
+
+* booking-service — Бизнес-логика бронирования, Сага, Пользователи.
+
+![alt text](image.png)
