@@ -1,4 +1,4 @@
-Вот готовый код для файла README.md. Скопируй его целиком и вставь в свой файл в VS Code.Markdown# 🏨 Hotel Booking System (Microservices)
+# 🏨 Hotel Booking System (Microservices)
 
 ![Java](https://img.shields.io/badge/Java-17-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x-green)
