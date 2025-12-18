@@ -45,7 +45,7 @@ graph TD
     Gateway -->|/api/hotels| Hotel
     
     Booking -->|Saga: Reserve Room| Hotel
-
+```
     
 
 ## 🌟 Ключевые особенности
