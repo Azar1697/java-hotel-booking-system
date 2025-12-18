@@ -91,18 +91,21 @@ graph TD
 
 1. **Клонирование репозитория**
    ```bash
-   git clone [https://github.com/ВАШ_НИК/hotel-booking-system.git](https://github.com/ВАШ_НИК/hotel-booking-system.git)
+   git clone https://github.com/Azar1697/java-hotel-booking-system.git
    cd hotel-booking-system
+   ```
 
 ### Сборка JAR-файлов
 Очистка и компиляция всех микросервисов:
 ```bash
 mvn clean package -DskipTests
+```
 
 ###Запуск контейнеров
 Поднятие всей инфраструктуры одной командой:
 ```bash
 docker-compose up --build
+```
 
 ### Проверка готовности
 
@@ -147,15 +150,15 @@ Header: Authorization: Bearer <TOKEN>
     "startDate": "2025-06-01",
     "endDate": "2025-06-10"
 }
-
+```
 ### 🧪 Тестирование
 ## Проект покрыт тестами на двух уровнях: Unit и Integration E2E.
 # 1. Запуск Unit-тестов (MockMvc)
 
 * Проверка контроллеров, валидации и обработки ошибок без поднятия Docker.
-````bash
+```bash
 mvn test
-
+```
 # 2. Запуск E2E сценария (FullSystemTest)
 
 * Интеграционный тест, проверяющий полный цикл работы системы на реальных Docker-контейнерах.
@@ -175,6 +178,7 @@ mvn test
 
 ```bash
 ./test_scenario.sh
+```
 
 ### 📂 Структура проекта
 
