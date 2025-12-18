@@ -25,27 +25,7 @@
 
 Система состоит из 4-х взаимосвязанных микросервисов, оркестрируемых через Docker Compose.
 
-```mermaid
-graph TD
-    Client((Client / User))
-    Gateway[API Gateway <br/> :8090]
-    Eureka[Discovery Server <br/> :8761]
-    
-    subgraph Services
-        Booking[Booking Service <br/> :8082]
-        Hotel[Hotel Service <br/> :8081]
-    end
-    
-    Client -->|JWT Token| Gateway
-    Gateway -.->|Registry Check| Eureka
-    Booking -.->|Register| Eureka
-    Hotel -.->|Register| Eureka
-    
-    Gateway -->|/api/bookings| Booking
-    Gateway -->|/api/hotels| Hotel
-    
-    Booking -->|Saga: Reserve Room| Hotel
-```
+![alt text](image.png)
     
 
 ## 🌟 Ключевые особенности
@@ -190,4 +170,4 @@ mvn test
 
 * booking-service — Бизнес-логика бронирования, Сага, Пользователи.
 
-![alt text](image.png)
+
