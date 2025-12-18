@@ -1,4 +1,0 @@
-/home/frolovf97/hotel-booking-system/api-gateway/src/main/java/com/example/gateway/ApiGatewayApplication.java
-/home/frolovf97/hotel-booking-system/api-gateway/src/main/java/com/example/gateway/filter/AuthenticationGatewayFilterFactory.java
-/home/frolovf97/hotel-booking-system/api-gateway/src/main/java/com/example/gateway/filter/RouteValidator.java
-/home/frolovf97/hotel-booking-system/api-gateway/src/main/java/com/example/gateway/util/JwtUtil.java

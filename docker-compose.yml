@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # 1. Сервер обнаружения (Discovery)
+  discovery-server:
+    build: ./discovery-server
+    container_name: discovery-server
+    ports:
+      - "8761:8761"
+    networks:
+      - hotel-network
+
+  # 2. API Gateway (Главный вход)
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8090:8090"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SERVER_PORT=8090
+    depends_on:
+      - discovery-server
+    networks:
+      - hotel-network
+
+  # 3. Сервис Отелей
+  hotel-service:
+    build: ./hotel-service
+    container_name: hotel-service
+    ports:
+      - "8081:8081" # Можно убрать, если не нужен прямой доступ, но для тестов оставим
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SERVER_PORT=8081
+    depends_on:
+      - discovery-server
+    networks:
+      - hotel-network
+
+  # 4. Сервис Бронирования
+  booking-service:
+    build: ./booking-service
+    container_name: booking-service
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SERVER_PORT=8082
+    depends_on:
+      - discovery-server
+    networks:
+      - hotel-network
+
+# Создаем общую сеть, чтобы они видели друг друга по имени
+networks:
+  hotel-network:
+    driver: bridge

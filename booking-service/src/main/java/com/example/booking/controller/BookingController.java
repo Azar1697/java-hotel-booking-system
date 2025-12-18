@@ -16,4 +16,10 @@ public class BookingController {
     public Booking createBooking(@RequestBody Booking booking) {
         return bookingService.createBooking(booking);
     }
+
+    // ИСПРАВЛЕНО: Полный метод с @RequestParam
+    @DeleteMapping("/{id}")
+    public void cancelBooking(@PathVariable Long id, @RequestParam Long userId) {
+        bookingService.cancelBooking(id, userId);
+    }
 }
