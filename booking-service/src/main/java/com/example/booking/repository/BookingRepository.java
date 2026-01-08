@@ -14,9 +14,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // Для истории пользователя
     List<Booking> findByUserId(Long userId);
 
-    // 🔥 ТОТ САМЫЙ МЕТОД ДЛЯ ПРОВЕРКИ ПЕРЕСЕЧЕНИЙ
-    // Логика: Найти бронь, где (Комната та же) И (Статус CONFIRMED) 
-    // И (КонецСуществующей > НачалоНовой) И (НачалоСуществующей < КонецНовой)
+    // Метод пересечений
     boolean existsByRoomIdAndStatusAndEndDateAfterAndStartDateBefore(
             Long roomId, 
             BookingStatus status, 
