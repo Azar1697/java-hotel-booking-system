@@ -1,7 +1,7 @@
 package com.example.booking.entity;
 
 import jakarta.persistence.*;
-import lombok.*; // <--- ВАЖНО: Звездочка импортирует все аннотации
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor 
 @AllArgsConstructor
-@Builder // <--- Важно для создания объектов
-@Data    // <--- Добавляет toString, equals, hashCode
+@Builder 
+@Data    
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
