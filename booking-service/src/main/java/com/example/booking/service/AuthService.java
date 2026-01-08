@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    // ИСПРАВЛЕНО: переименовали repository -> userRepository
     private final UserRepository userRepository; 
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
@@ -22,7 +21,7 @@ public class AuthService {
         log.info("Попытка регистрации пользователя: {}", user.getUsername());
         
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user); // ИСПРАВЛЕНО
+        userRepository.save(user); 
         
         log.info("Пользователь {} успешно зарегистрирован в системе", user.getUsername());
         return "User added to system";
@@ -34,7 +33,6 @@ public class AuthService {
     }
     
     public void validateUser(String username, String password) {
-         // Упрощение для учебного проекта
     }
     
     // Удаление пользователя (Admin)
